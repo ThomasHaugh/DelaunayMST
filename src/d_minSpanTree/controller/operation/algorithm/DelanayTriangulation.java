@@ -14,19 +14,21 @@ public class DelanayTriangulation implements GraphAlgorithm {
     gmi.getEdges().clear();
 
     // First we just need the points to be triangualted
-    final List<Vertex> vertices = gmi.getVertices();
-    Collections.sort(vertices);// This gives us a lexicographic sort on the members
+    final List<Vertex> vertices = new ArrayList<Vertex>();
+    vertices.addAll(gmi.getVertices());
+    Collections.sort(vertices); // This gives us a lexicographic sort on the members
 
-    // We pick the starting element as the first member of the sorted list
-    // this point will let us build a triangle around the remaining points
-    // due to its position
-    final Vertex startVert = vertices.get(0);
-    vertices.remove(0); // Removed so it can't be reused in the second phase
+    // Don't really need this right now.
+//    // We pick the starting element as the first member of the sorted list
+//    // this point will let us build a triangle around the remaining points
+//    // due to its position
+//    final Vertex startVert = vertices.get(0);
+//    vertices.remove(0);
 
     // We make a surrounding triangle so that the algorithm is as simple
-    // as possible, buildBigTriangle does this by makeing two fake vertices
+    // as possible, buildBigTriangle does this by making two fake vertices
     // which will be removed from the final triangulation
-    final Vertex[] triangle = buildBigTriangle(startVert, vertices); // triangle should be a three
+    final Vertex[] triangle = buildBigTriangle(vertices); // triangle should be a three
     // elem array
     // Positions 1 & 2 of triangle are added points
 
@@ -47,7 +49,7 @@ public class DelanayTriangulation implements GraphAlgorithm {
       // We find which member of the triangulation for now this might just
       // be a linear scan and we return its index in the triangulation data structure
       final int ctIndex = getContainingTriangleIndex(vert, triangulation);
-      final Vertex[] containingTriangle = trinagulation.get(ctIndex);
+      final Vertex[] containingTriangle = triangulation.get(ctIndex);
       // we remove the triangle we will refine and then add in the three new triangles
       triangulation.remove(ctIndex);
       triangulation.add(new Vertex[] { vert, containingTriangle[0],
@@ -77,6 +79,11 @@ public class DelanayTriangulation implements GraphAlgorithm {
 
     gmi.addTriangulationEdges(triangulation);
   }
+  
+  private void legalizeEdge(Vertex v, Vertex p1, Vertex p2,
+          List<Vertex[]> triangulation) {
+      
+  }
 
   private boolean isInTriangle(final Vertex vertex,
       final List<Vertex[]> triangulation) {
@@ -104,38 +111,49 @@ public class DelanayTriangulation implements GraphAlgorithm {
     return true;
   }
 
-  Vertex[] buildBigTriangle(final Vertex startVert, final List<Vertex> vertices) {
-    // assumes vertices are sorted
-
-    final Double[] maxs = getMaxXAndY(vertices);
-    final double biggestX = maxs[0];
-    final double biggestY = maxs[1];
-    final double p1X = (biggestY / biggestX) * (biggestY + 1) + biggestX + 1;
-    final double p1Y = 0;
-    final double p2X = 0;
-    final double p2Y = (biggestX / biggestY) * (biggestX + 1) + biggestY + 1;
-
-    final Vertex[] bigTriangle = new Vertex[3];
-    bigTriangle[0] = startVert;
-    bigTriangle[1] = new Vertex("fake point 1", p1X, p1Y);
-    bigTriangle[2] = new Vertex("fake point2", p2X, p2Y);
-    return bigTriangle;
+  Vertex[] buildBigTriangle(final List<Vertex> vertices) {
+      
+      // assumes vertices are sorted
+      
+      // Make a bounding box
+      final Double[] boundingValues = getMaxAndMin(vertices);
+      
+      
+      final double biggestX = maxs[0];
+      final double biggestY = maxs[1];
+      final double p1X = (biggestY / biggestX) * (biggestY + 1) + biggestX + 1;
+      final double p1Y = startVert.getY();
+      final double p2X = startVert.getX();
+      final double p2Y = (biggestX / biggestY) * (biggestX + 1) + biggestY + 1;
+    
+      final Vertex[] bigTriangle = new Vertex[3];
+      bigTriangle[0] = startVert;
+      bigTriangle[1] = new Vertex("fake point 1", p1X, p1Y);
+      bigTriangle[2] = new Vertex("fake point2", p2X, p2Y);
+      return bigTriangle;
   }
 
-  private Double[] getMaxXAndY(final List<Vertex> vertices) {
+  private Double[] getMaxAndMin(final List<Vertex> vertices) {
     double biggestX = Double.MIN_VALUE;
     double biggestY = Double.MIN_VALUE;
+    double smallestX = Double.MAX_VALUE;
+    double smallestY = Double.MAX_VALUE;
     for (final Vertex v : vertices) {
       if (v.getX() > biggestX) {
         biggestX = v.getX();
       }
-
       if (v.getY() > biggestY) {
         biggestY = v.getY();
       }
+      if (v.getX() < smallestX) {
+          smallestX = v.getX();
+      }
+      if (v.getY() < smallestY) {
+          smallestY = v.getY();
+      }
     }
 
-    return new Double[] { biggestX, biggestY };
+    return new Double[] { biggestX, biggestY, smallestX, smallestY };
   }
 
 }
