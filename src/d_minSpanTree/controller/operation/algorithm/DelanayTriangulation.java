@@ -18,12 +18,11 @@ public class DelanayTriangulation implements GraphAlgorithm {
     vertices.addAll(gmi.getVertices());
     Collections.sort(vertices); // This gives us a lexicographic sort on the members
 
-    // Don't really need this right now.
-//    // We pick the starting element as the first member of the sorted list
-//    // this point will let us build a triangle around the remaining points
-//    // due to its position
-//    final Vertex startVert = vertices.get(0);
-//    vertices.remove(0);
+    // We pick the starting element as the first member of the sorted list
+    // this point will let us build a triangle around the remaining points
+    // due to its position
+    final Vertex startVert = vertices.get(0);
+    vertices.remove(0);
 
     // We make a surrounding triangle so that the algorithm is as simple
     // as possible, buildBigTriangle does this by making two fake vertices

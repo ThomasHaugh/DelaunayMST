@@ -49,11 +49,11 @@ public class Vertex implements Comparable<Vertex> {
 
   @Override
   public int compareTo(final Vertex other) {
-    final int comp = Double.compare(getX(), getY());
+    final int comp = Double.compare(getY(), other.getY());
     if (comp != 0) {
-      return Double.compare(getY(), other.getY());
+      return -comp;
     } else {
-      return comp;
+      return -Double.compare(getX(), other.getX());
     }
   }
 
