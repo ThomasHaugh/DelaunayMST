@@ -78,22 +78,35 @@ public class DelanayTriangulation implements GraphAlgorithm {
 
     gmi.addTriangulationEdges(triangulation);
   }
-  
-  private void legalizeEdge(Vertex v, Vertex p1, Vertex p2,
-          List<Vertex[]> triangulation) {
-      
+
+  private void legalizeEdge(final Vertex v, final Vertex p1, final Vertex p2,
+      final List<Vertex[]> triangulation) {
+
   }
 
-  private boolean isInTriangle(final Vertex vertex,
-      final List<Vertex[]> triangulation) {
-    // todo not implemented
-    return false;
+  // http://stackoverflow.com/questions/2049582/how-to-determine-a-point-in-a-triangle
+  private boolean isInTriangle(final Vertex vertex, final Vertex[] tri) {
+    boolean b1, b2, b3;
+
+    b1 = sign(vertex.getX(), vertex.getY(), tri[0].getX(), tri[0].getY(),
+        tri[1].getX(), tri[1].getY()) < 0.0;
+    b2 = sign(vertex.getX(), vertex.getY(), tri[1].getX(), tri[1].getY(),
+        tri[2].getX(), tri[2].getY()) < 0.0;
+    b3 = sign(vertex.getX(), vertex.getY(), tri[2].getX(), tri[2].getY(),
+        tri[0].getX(), tri[0].getY()) < 0.0;
+
+    return ((b1 == b2) && (b2 == b3));
+  }
+
+  double sign(final double p1x, final double p1y, final double p2x,
+      final double p2y, final double p3x, final double p3y) {
+    return (p1x - p3x) * (p2y - p3y) - (p2x - p3x) * (p1y - p3y);
   }
 
   private int getContainingTriangleIndex(final Vertex vertex,
       final List<Vertex[]> triangulation) {
     for (int i = 0; i < triangulation.size(); i++) {
-      if (isInTriange(vertex, triangulation){
+      if (isInTriangle(vertex, triangulation.get(i))) {
         return i;
       }
     }
@@ -111,25 +124,24 @@ public class DelanayTriangulation implements GraphAlgorithm {
   }
 
   Vertex[] buildBigTriangle(final List<Vertex> vertices) {
-      
-      // assumes vertices are sorted
-      
-      // Make a bounding box
-      final Double[] boundingValues = getMaxAndMin(vertices);
-      
-      
-      final double biggestX = maxs[0];
-      final double biggestY = maxs[1];
-      final double p1X = (biggestY / biggestX) * (biggestY + 1) + biggestX + 1;
-      final double p1Y = startVert.getY();
-      final double p2X = startVert.getX();
-      final double p2Y = (biggestX / biggestY) * (biggestX + 1) + biggestY + 1;
-    
-      final Vertex[] bigTriangle = new Vertex[3];
-      bigTriangle[0] = startVert;
-      bigTriangle[1] = new Vertex("fake point 1", p1X, p1Y);
-      bigTriangle[2] = new Vertex("fake point2", p2X, p2Y);
-      return bigTriangle;
+
+    // assumes vertices are sorted
+
+    // Make a bounding box
+    final Double[] boundingValues = getMaxAndMin(vertices);
+
+    final double biggestX = maxs[0];
+    final double biggestY = maxs[1];
+    final double p1X = (biggestY / biggestX) * (biggestY + 1) + biggestX + 1;
+    final double p1Y = startVert.getY();
+    final double p2X = startVert.getX();
+    final double p2Y = (biggestX / biggestY) * (biggestX + 1) + biggestY + 1;
+
+    final Vertex[] bigTriangle = new Vertex[3];
+    bigTriangle[0] = startVert;
+    bigTriangle[1] = new Vertex("fake point 1", p1X, p1Y);
+    bigTriangle[2] = new Vertex("fake point2", p2X, p2Y);
+    return bigTriangle;
   }
 
   private Double[] getMaxAndMin(final List<Vertex> vertices) {
@@ -145,10 +157,10 @@ public class DelanayTriangulation implements GraphAlgorithm {
         biggestY = v.getY();
       }
       if (v.getX() < smallestX) {
-          smallestX = v.getX();
+        smallestX = v.getX();
       }
       if (v.getY() < smallestY) {
-          smallestY = v.getY();
+        smallestY = v.getY();
       }
     }
 
