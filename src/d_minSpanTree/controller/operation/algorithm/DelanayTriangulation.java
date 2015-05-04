@@ -4,20 +4,22 @@ import d_minSpanTree.model.Edge;
 import d_minSpanTree.model.GraphModelInterface;
 import d_minSpanTree.model.Vertex;
 
-public class DelanayTriangualtion implements GraphAlgorithm {
+public class DelanayTriangulation implements GraphAlgorithm {
 
     public void execute(GraphModelInterface gmi) {
 	gmi.getEdges().clear();
 
-	//TO Do make add the edges for the delanay triangulation
+	//TODO: make add the edges for the delanay triangulation
     }
 
     public String getName() {
 	return "Delanay Triangulation";
     }
 
-    public bolean canLiveUpdate {
-	return true;
+    @Override
+    public boolean canLiveUpdate() {
+        // TODO Auto-generated method stub
+        return true;
     }
 
 }
