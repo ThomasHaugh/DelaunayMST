@@ -1,6 +1,6 @@
 package d_minSpanTree.model;
 
-public class Edge {
+public class Edge implements Comparable<Edge> {
 	private Vertex start, end;
 	private double weight, opacity;
 	private EdgeState state;
@@ -59,5 +59,21 @@ public class Edge {
 	public void setState(EdgeState e) {
 		state = e;
 	}
+
+	// We just want this so that our set can tell
+	// when two objects are equal.
+    @Override
+    public int compareTo(Edge o) {
+        int compX = Double.compare(start.getX(), o.start.getX());
+        int compY = Double.compare(start.getY(), o.start.getY());
+        
+        if (compX != 0) {
+            return compX;
+        } else if (compY != 0) {
+            return compY;
+        } else { // Edges are equal.
+            return 0;
+        }
+    }
 
 }

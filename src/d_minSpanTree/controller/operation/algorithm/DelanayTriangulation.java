@@ -27,14 +27,14 @@ public class DelanayTriangulation implements GraphAlgorithm {
     // We make a surrounding triangle so that the algorithm is as simple
     // as possible, buildBigTriangle does this by making two fake vertices
     // which will be removed from the final triangulation
-    final Vertex[] triangle = buildBigTriangle(startVert, vertices); // triangle should be a three
+    final Vertex[] bigTriangle = buildBigTriangle(startVert, vertices); // triangle should be a three
     // elem array
     // Positions 1 & 2 of triangle are added points
 
     // We also make a triangulation data structure
     // We can probably do better than an arraylist
     final ArrayList<Vertex[]> triangulation = new ArrayList<Vertex[]>();
-    triangulation.add(triangle);
+    triangulation.add(bigTriangle);
 
     // We permute the remaining elements to prevent edgecase behavior
     Collections.shuffle(vertices); // I don't know if this method exist, but it's a good place
@@ -64,6 +64,8 @@ public class DelanayTriangulation implements GraphAlgorithm {
       // the current crossing or the one going from vert to the third point in the
       // other triangle containing the two adjacent edges
 
+      // TODO: Add if statement to handle the case when vert lies
+      // on one of the edges of the triangle.
       legalizeEdge(vert, containingTriangle[0], containingTriangle[1],
           triangulation);
       legalizeEdge(vert, containingTriangle[0], containingTriangle[2],
@@ -73,14 +75,15 @@ public class DelanayTriangulation implements GraphAlgorithm {
     }
 
     // Now we remove the fake points i.e. triangle[1], triangle[2]
-    triangulation.removeTrianglesWithVertex(triangle[1]);
-    triangulation.removeTrianglesWithVertex(triangle[2]);
+    triangulation.removeTrianglesWithVertex(bigTriangle[1]);
+    triangulation.removeTrianglesWithVertex(bigTriangle[2]);
 
     gmi.addTriangulationEdges(triangulation);
   }
 
   private void legalizeEdge(final Vertex v, final Vertex p1, final Vertex p2,
       final List<Vertex[]> triangulation) {
+      
 
   }
 
