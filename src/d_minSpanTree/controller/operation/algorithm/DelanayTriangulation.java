@@ -38,7 +38,6 @@ public class DelanayTriangulation implements GraphAlgorithm {
     // as possible, buildBigTriangle does this by making two fake vertices
     // which will be removed from the final triangulation
     final List<Vertex> bigTriangle = buildBigTriangle(startVert, vertices); // triangle should be a
-    System.out.println("DKLFJSLD: " + bigTriangle.get(0).getX() + " " + bigTriangle.get(0).getY());
     final Vertex fakeVertex1 = bigTriangle.get(1);
     final Vertex fakeVertex2 = bigTriangle.get(2);
     // three
@@ -48,10 +47,13 @@ public class DelanayTriangulation implements GraphAlgorithm {
     // We also make a triangulation data structure
     // We can probably do better than an arraylist
     final List<List<Vertex>> triangulation = new ArrayList<List<Vertex>>();
+    Collections.sort(bigTriangle);
     addToTriangulation(triangulation, bigTriangle);
 
     // We permute the remaining elements to prevent edgecase behavior
-    Collections.shuffle(vertices);
+    Collections.shuffle(vertices); // I don't know if this method exist, but it's a good place
+    // holder
+
     // Now the main for loop over the remaining elements
     for (final Vertex vert : vertices) {
       // Right now I am leaving out an if statment that should be there to make the
@@ -59,7 +61,6 @@ public class DelanayTriangulation implements GraphAlgorithm {
 
       // We find which member of the triangulation for now this might just
       // be a linear scan and we return its index in the triangulation data structure
-      System.out.println("size: " + triangulation.size());
       final int ctIndex = getContainingTriangleIndex(vert, triangulation);
       final List<Vertex> containingTriangle = triangulation.get(ctIndex);
       // we remove the triangle we will refine and then add in the three new triangles
@@ -179,7 +180,7 @@ public class DelanayTriangulation implements GraphAlgorithm {
     return Math
         .pow(
             Math.pow(v1.getX() - v2.getX(), 2)
-            + Math.pow(v1.getY() - v2.getY(), 2), .5);
+                + Math.pow(v1.getY() - v2.getY(), 2), .5);
   }
 
   // http://stackoverflow.com/questions/2049582/how-to-determine-a-point-in-a-triangle
@@ -201,11 +202,10 @@ public class DelanayTriangulation implements GraphAlgorithm {
     return (p1x - p3x) * (p2y - p3y) - (p2x - p3x) * (p1y - p3y);
   }
 
-  private int getContainingTriangleIndex(final Vertex vertex,
+  public int getContainingTriangleIndex(final Vertex vertex,
       final List<List<Vertex>> triangulation) {
     for (int i = 0; i < triangulation.size(); i++) {
       if (isInTriangle(vertex, triangulation.get(i))) {
-          System.out.println("TRUE");
         return i;
       }
     }
@@ -222,18 +222,26 @@ public class DelanayTriangulation implements GraphAlgorithm {
     return true;
   }
 
-  private List<Vertex> buildBigTriangle(final Vertex startVert,
+  public List<Vertex> buildBigTriangle(final Vertex startVert,
       final List<Vertex> vertices) {
     // assumes vertices are sorted
-    final double maxY = startVert.getY() + 1;
+    final double maxY = startVert.getY();
     final double minY = getMinY(vertices) - 1;
     final double startVertX = startVert.getX();
     final double startVertY = startVert.getY();
 
-    double maxSlope = Double.MIN_VALUE;
+    System.out.println("this is what's in vertices");
     for (final Vertex v : vertices) {
+      System.out.println(v.toString());
+    }
+    System.out.println("end vertices");
+
+    double maxSlope = Double.NEGATIVE_INFINITY;
+    for (final Vertex v : vertices) {
+      System.out.println("this is in vertices " + v.toString());
       if (startVert.getX() < v.getX()) {
-        double vSlope = (v.getY() - startVertY) / (v.getX() - startVertX);
+        final double vSlope = (v.getY() - startVertY) / (v.getX() - startVertX);
+        System.out.println(vSlope);
         if (vSlope > maxSlope) {
           maxSlope = vSlope;
         }
@@ -242,7 +250,7 @@ public class DelanayTriangulation implements GraphAlgorithm {
 
     double p1X;
     double p1Y;
-    if (maxSlope == Double.MIN_VALUE) {
+    if (maxSlope == Double.NEGATIVE_INFINITY) {
       p1X = startVert.getX();
       p1Y = minY;
     } else {
@@ -252,16 +260,19 @@ public class DelanayTriangulation implements GraphAlgorithm {
       p1Y = minY;
     }
 
-    maxSlope = Double.MIN_VALUE;
+    maxSlope = Double.NEGATIVE_INFINITY;
     for (final Vertex v : vertices) {
-      double vSlope = (v.getY() - startVertY) / (v.getX() - startVertX);
+      System.out.println(v.toString());
+      final double vSlope = (v.getY() - p1Y) / (v.getX() - p1X);
+      System.out.println("vslope is " + vSlope);
       if (vSlope > maxSlope) {
         maxSlope = vSlope;
       }
     }
 
-    final double p2X = ((maxY - p1Y) / (0.5 * maxSlope)) + p1X;
-    final double p2Y = maxY;
+    System.out.println("max slope is " + maxSlope);
+    final double p2X = (((maxY + 1) - p1Y) / (0.5 * maxSlope)) + p1X;
+    final double p2Y = maxY + 1;
 
     // final double biggestX = maxs[0];
     // final double biggestY = maxs[1];
@@ -278,7 +289,7 @@ public class DelanayTriangulation implements GraphAlgorithm {
   }
 
   private Double getMinY(final List<Vertex> vertices) {
-    double smallestY = Double.MAX_VALUE;
+    double smallestY = Double.POSITIVE_INFINITY;
     for (final Vertex v : vertices) {
       if (v.getY() < smallestY) {
         smallestY = v.getY();
