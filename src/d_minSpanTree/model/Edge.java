@@ -81,9 +81,11 @@ public class Edge implements Comparable<Edge> {
         if (getClass() != obj.getClass())
             return false;
         final Edge other = (Edge) obj;
-        if (Double.compare(start.getX(), other.start.getX()) != 0 ||
-                Double.compare(start.getY(), other.start.getY()) != 0)
+        if (start.compareTo(other.start) != 0)
             return false;
+        else if (end.compareTo(other.end) != 0) 
+            return false;
+        
         return true;
     }
     
@@ -101,6 +103,11 @@ public class Edge implements Comparable<Edge> {
         } else { // Edges are equal.
             return 0;
         }
+    }
+    
+    @Override
+    public String toString() {
+        return "(" + start.getX() + "," + start.getY() + ") |-> (" + end.getX() + "," + end.getY() + ")";
     }
 
 }

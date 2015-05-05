@@ -16,12 +16,14 @@ public class DelaunayTriangulation implements GraphAlgorithm {
   public boolean addToTriangulation(final List<List<Vertex>> triangulation,
       final List<Vertex> triangle) {
     Collections.sort(triangle);
+    System.out.println("ADDED A TRIANGLE");
     return triangulation.add(triangle);
   }
 
   @Override
   public void execute(final GraphModelInterface gmi) {
     gmi.getEdges().clear();
+    System.out.println("size: " + gmi.getVertices().size());
 
     long startTime = System.nanoTime(); // Start the total timing
     
@@ -30,9 +32,10 @@ public class DelaunayTriangulation implements GraphAlgorithm {
     vertices.addAll(gmi.getVertices());
     Collections.sort(vertices); // This gives us a lexicographic sort on the members
     
-    if (vertices.isEmpty()) {
+    if (vertices.size() < 2) {
         return; // Go no farther if there are no vertices to work with.
     }
+    
     // We pick the starting element as the first member of the sorted list
     // this point will let us build a triangle around the remaining points
     // due to its position
@@ -70,6 +73,7 @@ public class DelaunayTriangulation implements GraphAlgorithm {
       final List<Vertex> containingTriangle = triangulation.get(ctIndex);
       // we remove the triangle we will refine and then add in the three new triangles
       triangulation.remove(ctIndex);
+      System.out.println("removed surrounding triangle");
       final List<Vertex> l1 = new ArrayList<Vertex>();
       l1.add(vert);
       l1.add(containingTriangle.get(0));
@@ -96,12 +100,12 @@ public class DelaunayTriangulation implements GraphAlgorithm {
 
       // TODO: Add if statement to handle the case when vert lies
       // on one of the edges of the triangle.
-      legalizeEdge(vert, containingTriangle.get(0), containingTriangle.get(1),
-          triangulation);
-      legalizeEdge(vert, containingTriangle.get(0), containingTriangle.get(2),
-          triangulation);
-      legalizeEdge(vert, containingTriangle.get(1), containingTriangle.get(2),
-          triangulation);
+//      legalizeEdge(vert, containingTriangle.get(0), containingTriangle.get(1),
+//          triangulation);
+//      legalizeEdge(vert, containingTriangle.get(0), containingTriangle.get(2),
+//          triangulation);
+//      legalizeEdge(vert, containingTriangle.get(1), containingTriangle.get(2),
+//          triangulation);
     }
 
     // Now we remove the fake points i.e. triangle[1], triangle[2]
@@ -119,19 +123,24 @@ public class DelaunayTriangulation implements GraphAlgorithm {
   private void removeTrianglesWithVertex(
       final List<List<Vertex>> triangulation, final Vertex vertex) {
       
-    final List<Vertex> removals = new ArrayList<Vertex>();
+    final List<List<Vertex>> removals = new ArrayList<>();
     
     for (final List<Vertex> triangle : triangulation) {
       if (triangle.contains(vertex)) {
-        removals.add(vertex);
+          
+        removals.add(triangle);
       }
     }
+    System.out.println("REMOVING " + removals.size() + " triangles.\n"
+            + triangulation.size());
     triangulation.removeAll(removals);
+    System.out.println("after removal: " + triangulation.size());
   }
 
   private void addTriangulationEdges(final GraphModelInterface gmi,
       final List<List<Vertex>> triangulation) {
       
+      System.out.println("raw input of triangles: " + triangulation.size());
       // Use a set to avoid adding duplicate edges.
       final Set<Edge> edgeSet = new TreeSet<Edge>();
       for (final List<Vertex> triangle : triangulation) {
@@ -157,6 +166,10 @@ public class DelaunayTriangulation implements GraphAlgorithm {
           edgeSet.add(e1);
           edgeSet.add(e2);
           edgeSet.add(e3);
+      }
+      System.out.println("edge set: ");
+      for (Edge e : edgeSet) {
+          System.out.println(e.toString());
       }
       
       gmi.getEdges().addAll(edgeSet);
@@ -230,7 +243,7 @@ public class DelaunayTriangulation implements GraphAlgorithm {
 //        .getY(), tri.get(0).getX(), tri.get(0).getY()) < 0.0;
 //
 //    return ((b1 == b2) && (b2 == b3));
-     System.out.println("triangle size is " + tri.size());
+     //System.out.println("triangle size is " + tri.size());
      final Vertex p0 = tri.get(0);
      final Vertex p1 = tri.get(1);
      final Vertex p2 = tri.get(2);
@@ -324,7 +337,7 @@ public class DelaunayTriangulation implements GraphAlgorithm {
       //System.out.println("this is in vertices " + v.toString());
       if (startVert.getX() < v.getX()) {
         final double vSlope = (v.getY() - startVertY) / (v.getX() - startVertX);
-        System.out.println(vSlope);
+        //System.out.println(vSlope);
         if (vSlope > maxSlope) {
           maxSlope = vSlope;
         }

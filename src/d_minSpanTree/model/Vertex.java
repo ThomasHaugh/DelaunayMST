@@ -58,10 +58,10 @@ public class Vertex implements Comparable<Vertex> {
     final int compX = Double.compare(getX(), other.getX());
     final int compY = Double.compare(getY(), other.getY());
 
-    if (compX != 0) {
-        return compX;
-    } else if (compY != 0) {
-        return compY;
+    if (compY != 0) {
+        return -compY;
+    } else if (compX != 0) {
+        return -compX;
     } else {
       return 0;
     }
