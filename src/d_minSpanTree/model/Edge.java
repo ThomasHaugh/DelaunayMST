@@ -81,9 +81,7 @@ public class Edge implements Comparable<Edge> {
         if (getClass() != obj.getClass())
             return false;
         final Edge other = (Edge) obj;
-        if (start.compareTo(other.start) != 0)
-            return false;
-        else if (end.compareTo(other.end) != 0) 
+        if (compareTo(other) != 0)
             return false;
         
         return true;
@@ -93,16 +91,13 @@ public class Edge implements Comparable<Edge> {
 	// when two objects are equal.
     @Override
     public int compareTo(Edge o) {
-        int compX = Double.compare(start.getX(), o.start.getX());
-        int compY = Double.compare(start.getY(), o.start.getY());
-        
-        if (compX != 0) {
-            return compX;
-        } else if (compY != 0) {
-            return compY;
-        } else { // Edges are equal.
+        if ((start.compareTo(o.start) == 0 && end.compareTo(o.end) == 0) ||
+            start.compareTo(o.end) == 0 && end.compareTo(o.start) == 0) {
             return 0;
         }
+        
+        // We don't care, we just want to check if it's equal.
+        return -1;
     }
     
     @Override

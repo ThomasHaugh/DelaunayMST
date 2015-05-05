@@ -55,7 +55,6 @@ public class DelaunayTriangulation implements GraphAlgorithm {
     // We also make a triangulation data structure
     // We can probably do better than an arraylist
     final List<List<Vertex>> triangulation = new ArrayList<List<Vertex>>();
-    Collections.sort(bigTriangle);
     addToTriangulation(triangulation, bigTriangle);
 
     // We permute the remaining elements to prevent edgecase behavior
@@ -73,6 +72,7 @@ public class DelaunayTriangulation implements GraphAlgorithm {
       final List<Vertex> containingTriangle = triangulation.get(ctIndex);
       // we remove the triangle we will refine and then add in the three new triangles
       triangulation.remove(ctIndex);
+      
       System.out.println("removed surrounding triangle");
       final List<Vertex> l1 = new ArrayList<Vertex>();
       l1.add(vert);
@@ -118,6 +118,13 @@ public class DelaunayTriangulation implements GraphAlgorithm {
     long endTime   = System.nanoTime(); // Finish the total timing
     float timeElapsed = (endTime-startTime)/1000000.0f; // milliseconds
     System.out.println("Edge creation O(f(nE,nV)???):" + timeElapsed);
+    
+    // Just for testing.
+    for (final Edge e : gmi.getEdges()) {
+        e.setOpacity(1);
+      }
+    gmi.getDisplayEdges().clear();
+    gmi.getDisplayEdges().addAll(gmi.getEdges());
   }
 
   private void removeTrianglesWithVertex(
@@ -127,7 +134,6 @@ public class DelaunayTriangulation implements GraphAlgorithm {
     
     for (final List<Vertex> triangle : triangulation) {
       if (triangle.contains(vertex)) {
-          
         removals.add(triangle);
       }
     }
