@@ -180,12 +180,12 @@ public class DelanayTriangulation implements GraphAlgorithm {
     return Math
         .pow(
             Math.pow(v1.getX() - v2.getX(), 2)
-                + Math.pow(v1.getY() - v2.getY(), 2), .5);
+            + Math.pow(v1.getY() - v2.getY(), 2), .5);
   }
 
   // http://stackoverflow.com/questions/2049582/how-to-determine-a-point-in-a-triangle
-  private boolean isInTriangle(final Vertex vertex, final List<Vertex> tri) {
-    boolean b1, b2, b3;
+  public boolean isInTriangle(final Vertex vertex, final List<Vertex> tri) {
+    final boolean b1, b2, b3;
 
     b1 = sign(vertex.getX(), vertex.getY(), tri.get(0).getX(), tri.get(0)
         .getY(), tri.get(1).getX(), tri.get(1).getY()) < 0.0;
@@ -195,6 +195,54 @@ public class DelanayTriangulation implements GraphAlgorithm {
         .getY(), tri.get(0).getX(), tri.get(0).getY()) < 0.0;
 
     return ((b1 == b2) && (b2 == b3));
+    // System.out.println("triangle size is " + tri.size());
+    // final Vertex p0 = tri.get(0);
+    // final Vertex p1 = tri.get(1);
+    // final Vertex p2 = tri.get(2);
+    // // Doesn't check edges
+    // if (p0.getX() == p1.getX()) {
+    // if (Double.compare(vertex.getX(), p1.getX()) != Double.compare(p2.getX(),
+    // p1.getX())) {
+    // return false;
+    // }
+    // } else {
+    // final double slope = (p0.getY() - p1.getY()) / (p0.getX() - p1.getX());
+    // if (Double
+    // .compare(p2.getY() - p1.getY(), slope * (p2.getX() - p1.getX())) != Double
+    // .compare(vertex.getY() - p1.getY(),
+    // slope * (vertex.getX() - p1.getX()))) {
+    // return false;
+    // }
+    // }
+    // if (p0.getX() == p2.getX()) {
+    // if (Double.compare(vertex.getX(), p2.getX()) != Double.compare(p1.getX(),
+    // p2.getX())) {
+    // return false;
+    // }
+    // } else {
+    // final double slope = (p0.getY() - p2.getY()) / (p0.getX() - p2.getX());
+    // if (Double
+    // .compare(p1.getY() - p2.getY(), slope * (p1.getX() - p2.getX())) != Double
+    // .compare(vertex.getY() - p2.getY(),
+    // slope * (vertex.getX() - p2.getX()))) {
+    // return false;
+    // }
+    // }
+    // if (p2.getX() == p1.getX()) {
+    // if (Double.compare(vertex.getX(), p1.getX()) != Double.compare(p0.getX(),
+    // p1.getX())) {
+    // return false;
+    // }
+    // } else {
+    // final double slope = (p2.getY() - p1.getY()) / (p2.getX() - p1.getX());
+    // if (Double
+    // .compare(p0.getY() - p1.getY(), slope * (p0.getX() - p1.getX())) != Double
+    // .compare(vertex.getY() - p1.getY(),
+    // slope * (vertex.getX() - p1.getX()))) {
+    // return false;
+    // }
+    // }
+    // return true;
   }
 
   double sign(final double p1x, final double p1y, final double p2x,

@@ -1,6 +1,7 @@
 package d_minSpanTree.controller.operation.algorithm;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,7 @@ public class DelanayTriangulationTest {
     final Vertex v1 = new Vertex("v", 1, 1);
     final Vertex v2 = new Vertex("v", 2, 2);
     final Vertex v3 = new Vertex("v", 1, 2);
+    final Vertex newV = new Vertex("whatever", 1.5, 1.75);
 
     final Vertex v4 = new Vertex("v", 6, 7);
     final Vertex v5 = new Vertex("v", 10, 8);
@@ -35,15 +37,18 @@ public class DelanayTriangulationTest {
     tri1.add(v3);
 
     final List<Vertex> tri2 = new ArrayList<Vertex>();
-    tri1.add(v4);
-    tri1.add(v1);
-    tri1.add(v5);
+    tri2.add(v4);
+    tri2.add(v1);
+    tri2.add(v5);
 
     final List<List<Vertex>> lists = new ArrayList<List<Vertex>>();
     lists.add(tri1);
     lists.add(tri2);
 
+    assertTrue(d.isInTriangle(newV, tri1));
+
     assertEquals(0, d.getContainingTriangleIndex(v2, lists));
+    assertEquals(1, d.getContainingTriangleIndex(v4, lists));
 
     final Vertex startVertex = new Vertex("v", 1, 1);
     final Vertex zerozero = new Vertex("v", 0, 0);
