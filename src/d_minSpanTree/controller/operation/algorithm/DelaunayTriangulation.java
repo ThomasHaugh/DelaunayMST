@@ -218,64 +218,64 @@ public class DelaunayTriangulation implements GraphAlgorithm {
 
   // http://stackoverflow.com/questions/2049582/how-to-determine-a-point-in-a-triangle
   public boolean isInTriangle(final Vertex vertex, final List<Vertex> tri) {
-    final boolean b1, b2, b3;
-
-    b1 = sign(vertex.getX(), vertex.getY(), tri.get(0).getX(), tri.get(0)
-        .getY(), tri.get(1).getX(), tri.get(1).getY()) < 0.0;
-    b2 = sign(vertex.getX(), vertex.getY(), tri.get(1).getX(), tri.get(1)
-        .getY(), tri.get(2).getX(), tri.get(2).getY()) < 0.0;
-    b3 = sign(vertex.getX(), vertex.getY(), tri.get(2).getX(), tri.get(2)
-        .getY(), tri.get(0).getX(), tri.get(0).getY()) < 0.0;
-
-    return ((b1 == b2) && (b2 == b3));
-    // System.out.println("triangle size is " + tri.size());
-    // final Vertex p0 = tri.get(0);
-    // final Vertex p1 = tri.get(1);
-    // final Vertex p2 = tri.get(2);
-    // // Doesn't check edges
-    // if (p0.getX() == p1.getX()) {
-    // if (Double.compare(vertex.getX(), p1.getX()) != Double.compare(p2.getX(),
-    // p1.getX())) {
-    // return false;
-    // }
-    // } else {
-    // final double slope = (p0.getY() - p1.getY()) / (p0.getX() - p1.getX());
-    // if (Double
-    // .compare(p2.getY() - p1.getY(), slope * (p2.getX() - p1.getX())) != Double
-    // .compare(vertex.getY() - p1.getY(),
-    // slope * (vertex.getX() - p1.getX()))) {
-    // return false;
-    // }
-    // }
-    // if (p0.getX() == p2.getX()) {
-    // if (Double.compare(vertex.getX(), p2.getX()) != Double.compare(p1.getX(),
-    // p2.getX())) {
-    // return false;
-    // }
-    // } else {
-    // final double slope = (p0.getY() - p2.getY()) / (p0.getX() - p2.getX());
-    // if (Double
-    // .compare(p1.getY() - p2.getY(), slope * (p1.getX() - p2.getX())) != Double
-    // .compare(vertex.getY() - p2.getY(),
-    // slope * (vertex.getX() - p2.getX()))) {
-    // return false;
-    // }
-    // }
-    // if (p2.getX() == p1.getX()) {
-    // if (Double.compare(vertex.getX(), p1.getX()) != Double.compare(p0.getX(),
-    // p1.getX())) {
-    // return false;
-    // }
-    // } else {
-    // final double slope = (p2.getY() - p1.getY()) / (p2.getX() - p1.getX());
-    // if (Double
-    // .compare(p0.getY() - p1.getY(), slope * (p0.getX() - p1.getX())) != Double
-    // .compare(vertex.getY() - p1.getY(),
-    // slope * (vertex.getX() - p1.getX()))) {
-    // return false;
-    // }
-    // }
-    // return true;
+//    final boolean b1, b2, b3;
+//
+//    b1 = sign(vertex.getX(), vertex.getY(), tri.get(0).getX(), tri.get(0)
+//        .getY(), tri.get(1).getX(), tri.get(1).getY()) < 0.0;
+//    b2 = sign(vertex.getX(), vertex.getY(), tri.get(1).getX(), tri.get(1)
+//        .getY(), tri.get(2).getX(), tri.get(2).getY()) < 0.0;
+//    b3 = sign(vertex.getX(), vertex.getY(), tri.get(2).getX(), tri.get(2)
+//        .getY(), tri.get(0).getX(), tri.get(0).getY()) < 0.0;
+//
+//    return ((b1 == b2) && (b2 == b3));
+     System.out.println("triangle size is " + tri.size());
+     final Vertex p0 = tri.get(0);
+     final Vertex p1 = tri.get(1);
+     final Vertex p2 = tri.get(2);
+     // Doesn't check edges
+     if (p0.getX() == p1.getX()) {
+     if (Double.compare(vertex.getX(), p1.getX()) != Double.compare(p2.getX(),
+     p1.getX())) {
+     return false;
+     }
+     } else {
+     final double slope = (p0.getY() - p1.getY()) / (p0.getX() - p1.getX());
+     if (Double
+     .compare(p2.getY() - p1.getY(), slope * (p2.getX() - p1.getX())) != Double
+     .compare(vertex.getY() - p1.getY(),
+     slope * (vertex.getX() - p1.getX()))) {
+     return false;
+     }
+     }
+     if (p0.getX() == p2.getX()) {
+     if (Double.compare(vertex.getX(), p2.getX()) != Double.compare(p1.getX(),
+     p2.getX())) {
+     return false;
+     }
+     } else {
+     final double slope = (p0.getY() - p2.getY()) / (p0.getX() - p2.getX());
+     if (Double
+     .compare(p1.getY() - p2.getY(), slope * (p1.getX() - p2.getX())) != Double
+     .compare(vertex.getY() - p2.getY(),
+     slope * (vertex.getX() - p2.getX()))) {
+     return false;
+     }
+     }
+     if (p2.getX() == p1.getX()) {
+     if (Double.compare(vertex.getX(), p1.getX()) != Double.compare(p0.getX(),
+     p1.getX())) {
+     return false;
+     }
+     } else {
+     final double slope = (p2.getY() - p1.getY()) / (p2.getX() - p1.getX());
+     if (Double
+     .compare(p0.getY() - p1.getY(), slope * (p0.getX() - p1.getX())) != Double
+     .compare(vertex.getY() - p1.getY(),
+     slope * (vertex.getX() - p1.getX()))) {
+     return false;
+     }
+     }
+     return true;
   }
 
   double sign(final double p1x, final double p1y, final double p2x,
@@ -311,15 +311,15 @@ public class DelaunayTriangulation implements GraphAlgorithm {
     final double startVertX = startVert.getX();
     final double startVertY = startVert.getY();
 
-    System.out.println("this is what's in vertices");
-    for (final Vertex v : vertices) {
-      System.out.println(v.toString());
-    }
-    System.out.println("end vertices");
+//    System.out.println("this is what's in vertices");
+//    for (final Vertex v : vertices) {
+//      System.out.println(v.toString());
+//    }
+//    System.out.println("end vertices");
 
     double maxSlope = Double.NEGATIVE_INFINITY;
     for (final Vertex v : vertices) {
-      System.out.println("this is in vertices " + v.toString());
+      //System.out.println("this is in vertices " + v.toString());
       if (startVert.getX() < v.getX()) {
         final double vSlope = (v.getY() - startVertY) / (v.getX() - startVertX);
         System.out.println(vSlope);
@@ -343,15 +343,15 @@ public class DelaunayTriangulation implements GraphAlgorithm {
 
     maxSlope = Double.NEGATIVE_INFINITY;
     for (final Vertex v : vertices) {
-      System.out.println(v.toString());
+      //System.out.println(v.toString());
       final double vSlope = (v.getY() - p1Y) / (v.getX() - p1X);
-      System.out.println("vslope is " + vSlope);
+      //System.out.println("vslope is " + vSlope);
       if (vSlope > maxSlope) {
         maxSlope = vSlope;
       }
     }
 
-    System.out.println("max slope is " + maxSlope);
+    //System.out.println("max slope is " + maxSlope);
     final double p2X = (((maxY + 1) - p1Y) / (0.5 * maxSlope)) + p1X;
     final double p2Y = maxY + 1;
 
