@@ -1,4 +1,4 @@
-package d_minSpanTree.controller.operation.algorithm;
+package d_minSpanTree.controller.operation;
 
 import static org.junit.Assert.assertEquals;
 
@@ -8,6 +8,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import d_minSpanTree.controller.operation.algorithm.DelanayTriangulation;
 import d_minSpanTree.model.Vertex;
 
 public class DelanayTriangulationTest {
