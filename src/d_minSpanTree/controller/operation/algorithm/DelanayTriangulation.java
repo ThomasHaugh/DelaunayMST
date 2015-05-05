@@ -31,14 +31,14 @@ public class DelanayTriangulation implements GraphAlgorithm {
     // We make a surrounding triangle so that the algorithm is as simple
     // as possible, buildBigTriangle does this by making two fake vertices
     // which will be removed from the final triangulation
-    final Vertex[] bigTriangle = buildBigTriangle(startVert, vertices); // triangle should be a
+    final List<Vertex> bigTriangle = buildBigTriangle(startVert, vertices); // triangle should be a
     // three
     // elem array
     // Positions 1 & 2 of triangle are added points
 
     // We also make a triangulation data structure
     // We can probably do better than an arraylist
-    final ArrayList<Vertex[]> triangulation = new ArrayList<Vertex[]>();
+    final List<List<Vertex>> triangulation = new ArrayList<List<Vertex>>();
     triangulation.add(bigTriangle);
 
     // We permute the remaining elements to prevent edgecase behavior
@@ -53,15 +53,26 @@ public class DelanayTriangulation implements GraphAlgorithm {
       // We find which member of the triangulation for now this might just
       // be a linear scan and we return its index in the triangulation data structure
       final int ctIndex = getContainingTriangleIndex(vert, triangulation);
-      final Vertex[] containingTriangle = triangulation.get(ctIndex);
+      final List<Vertex> containingTriangle = triangulation.get(ctIndex);
       // we remove the triangle we will refine and then add in the three new triangles
       triangulation.remove(ctIndex);
-      triangulation.add(new Vertex[] { vert, containingTriangle[0],
-          containingTriangle[1] });
-      triangulation.add(new Vertex[] { vert, containingTriangle[0],
-          containingTriangle[2] });
-      triangulation.add(new Vertex[] { vert, containingTriangle[1],
-          containingTriangle[2] });
+      List l1 = new ArrayList<Vertex>();
+      l1.add(vert);
+      l1.add(containingTriangle.get(0));
+      l1.add(containingTriangle.get(1));
+      triangulation.add(l1);
+      
+      List l2 = new ArrayList<Vertex>();
+      l2.add(vert);
+      l2.add(containingTriangle.get(0));
+      l2.add(containingTriangle.get(2));
+      triangulation.add(l2);
+      
+      List l3 = new ArrayList<Vertex>();
+      l3.add(vert);
+      l3.add(containingTriangle.get(1));
+      l3.add(containingTriangle.get(2));
+      triangulation.add(l2);
       // Now we need to improve the local result
       // We use the legalizeEdge method to do this
       // For every pair of points there are at most two triangles containg that pair
@@ -71,17 +82,17 @@ public class DelanayTriangulation implements GraphAlgorithm {
 
       // TODO: Add if statement to handle the case when vert lies
       // on one of the edges of the triangle.
-      legalizeEdge(vert, containingTriangle[0], containingTriangle[1],
+      legalizeEdge(vert, containingTriangle.get(0), containingTriangle.get(1),
           triangulation);
-      legalizeEdge(vert, containingTriangle[0], containingTriangle[2],
+      legalizeEdge(vert, containingTriangle.get(0), containingTriangle.get(2),
           triangulation);
-      legalizeEdge(vert, containingTriangle[1], containingTriangle[2],
+      legalizeEdge(vert, containingTriangle.get(1), containingTriangle.get(2),
           triangulation);
     }
 
     // Now we remove the fake points i.e. triangle[1], triangle[2]
-    triangulation.removeTrianglesWithVertex(bigTriangle[1]);
-    triangulation.removeTrianglesWithVertex(bigTriangle[2]);
+    triangulation.removeTrianglesWithVertex(bigTriangle.get(1));
+    triangulation.removeTrianglesWithVertex(bigTriangle.get(2));
 
     addTriangulationEdges(gmi, triangulation);
   }
@@ -98,25 +109,24 @@ public class DelanayTriangulation implements GraphAlgorithm {
   }
 
   private void legalizeEdge(final Vertex v, final Vertex p1, final Vertex p2,
-      final List<Vertex[]> triangulation) {
+      final List<List<Vertex>> triangulation) {
       
-      for (int i=0; i < triangulation.size(); i++) {
-          Vertex[] triangle = triangulation.get(i);
-          triangulation.indexOf(triangle);
-          boolean p1InTriangle = false;
-          boolean p2InTriangle = false;
+      for (List<Vertex> triangle : triangulation) {
+          
           Vertex p3 = null;
-          for (int j=0; i < 3; i++) {
-              if (triangle[j] == p1) {
-                  p1InTriangle = true;
-              } else if (triangle[j] == p2) {
-                  p2InTriangle = true;
+          int i1 = triangle.indexOf(p1);
+          int i2 = triangle.indexOf(p2);
+          if (i1 != -1 && i2 != -1) {
+              if (i1 + i2 == 1) {
+                  p3 = triangle.get(2);
+              } else if (i1 + i2 == 3) {
+                  p3 = triangle.get(0);
+              } else if (i1 + i2 == 2){
+                  p3 = triangle.get(1);
               } else {
-                  // our 3rd coordinate
-                  p3 = triangle[j];
+                  System.out.println("oh shit");
               }
-          }
-          if (p1InTriangle && p2InTriangle) {
+              
               // TODO: Check if there are points inside the triangle.
               int comp = Double.compare(p1.distanceTo(p2), v.distanceTo(p3));
               if (comp > 0) {
@@ -129,15 +139,15 @@ public class DelanayTriangulation implements GraphAlgorithm {
   
 
   // http://stackoverflow.com/questions/2049582/how-to-determine-a-point-in-a-triangle
-  private boolean isInTriangle(final Vertex vertex, final Vertex[] tri) {
+  private boolean isInTriangle(final Vertex vertex, final List<Vertex> tri) {
     boolean b1, b2, b3;
 
-    b1 = sign(vertex.getX(), vertex.getY(), tri[0].getX(), tri[0].getY(),
-        tri[1].getX(), tri[1].getY()) < 0.0;
-    b2 = sign(vertex.getX(), vertex.getY(), tri[1].getX(), tri[1].getY(),
-        tri[2].getX(), tri[2].getY()) < 0.0;
-    b3 = sign(vertex.getX(), vertex.getY(), tri[2].getX(), tri[2].getY(),
-        tri[0].getX(), tri[0].getY()) < 0.0;
+    b1 = sign(vertex.getX(), vertex.getY(), tri.get(0).getX(), tri.get(0).getY(),
+        tri.get(1).getX(), tri.get(1).getY()) < 0.0;
+    b2 = sign(vertex.getX(), vertex.getY(), tri.get(1).getX(), tri.get(1).getY(),
+        tri.get(2).getX(), tri.get(2).getY()) < 0.0;
+    b3 = sign(vertex.getX(), vertex.getY(), tri.get(2).getX(), tri.get(2).getY(),
+        tri.get(0).getX(), tri.get(0).getY()) < 0.0;
 
     return ((b1 == b2) && (b2 == b3));
   }
@@ -148,7 +158,7 @@ public class DelanayTriangulation implements GraphAlgorithm {
   }
 
   private int getContainingTriangleIndex(final Vertex vertex,
-      final List<Vertex[]> triangulation) {
+      final List<List<Vertex>> triangulation) {
     for (int i = 0; i < triangulation.size(); i++) {
       if (isInTriangle(vertex, triangulation.get(i))) {
         return i;
@@ -167,7 +177,7 @@ public class DelanayTriangulation implements GraphAlgorithm {
     return true;
   }
 
-  Vertex[] buildBigTriangle(final Vertex startVert, final List<Vertex> vertices) {
+  private List<Vertex> buildBigTriangle(final Vertex startVert, final List<Vertex> vertices) {
     // assumes vertices are sorted
     final double maxY = startVert.getY();
     final double minY = getMinY(vertices) - 1;
@@ -214,10 +224,10 @@ public class DelanayTriangulation implements GraphAlgorithm {
     // final double p2X = startVert.getX();
     // final double p2Y = (biggestX / biggestY) * (biggestX + 1) + biggestY + 1;
 
-    final Vertex[] bigTriangle = new Vertex[3];
-    bigTriangle[0] = startVert;
-    bigTriangle[1] = new Vertex("fake point 1", p1X, p1Y);
-    bigTriangle[2] = new Vertex("fake point2", p2X, p2Y);
+    final List<Vertex> bigTriangle = new ArrayList<>();
+    bigTriangle.add(startVert);
+    bigTriangle.add(new Vertex("fake point 1", p1X, p1Y));
+    bigTriangle.add(new Vertex("fake point2", p2X, p2Y));
     return bigTriangle;
   }
 
