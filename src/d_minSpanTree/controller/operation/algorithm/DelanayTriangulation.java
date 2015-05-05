@@ -13,6 +13,12 @@ import d_minSpanTree.model.Vertex;
 
 public class DelanayTriangulation implements GraphAlgorithm {
 
+  public boolean addToTriangulation(final List<List<Vertex>> triangulation,
+      final List<Vertex> triangle) {
+    Collections.sort(triangle);
+    return triangulation.add(triangle);
+  }
+
   @Override
   public void execute(final GraphModelInterface gmi) {
     gmi.getEdges().clear();
@@ -32,6 +38,8 @@ public class DelanayTriangulation implements GraphAlgorithm {
     // as possible, buildBigTriangle does this by making two fake vertices
     // which will be removed from the final triangulation
     final List<Vertex> bigTriangle = buildBigTriangle(startVert, vertices); // triangle should be a
+    final Vertex fakeVertex1 = bigTriangle.get(1);
+    final Vertex fakeVertex2 = bigTriangle.get(2);
     // three
     // elem array
     // Positions 1 & 2 of triangle are added points
@@ -39,7 +47,8 @@ public class DelanayTriangulation implements GraphAlgorithm {
     // We also make a triangulation data structure
     // We can probably do better than an arraylist
     final List<List<Vertex>> triangulation = new ArrayList<List<Vertex>>();
-    triangulation.add(bigTriangle);
+    Collections.sort(bigTriangle);
+    addToTriangulation(triangulation, bigTriangle);
 
     // We permute the remaining elements to prevent edgecase behavior
     Collections.shuffle(vertices); // I don't know if this method exist, but it's a good place
@@ -56,23 +65,23 @@ public class DelanayTriangulation implements GraphAlgorithm {
       final List<Vertex> containingTriangle = triangulation.get(ctIndex);
       // we remove the triangle we will refine and then add in the three new triangles
       triangulation.remove(ctIndex);
-      List l1 = new ArrayList<Vertex>();
+      final List<Vertex> l1 = new ArrayList<Vertex>();
       l1.add(vert);
       l1.add(containingTriangle.get(0));
       l1.add(containingTriangle.get(1));
-      triangulation.add(l1);
-      
-      List l2 = new ArrayList<Vertex>();
+      addToTriangulation(triangulation, l1);
+
+      final List<Vertex> l2 = new ArrayList<Vertex>();
       l2.add(vert);
       l2.add(containingTriangle.get(0));
       l2.add(containingTriangle.get(2));
-      triangulation.add(l2);
-      
-      List l3 = new ArrayList<Vertex>();
+      addToTriangulation(triangulation, l2);
+
+      final List<Vertex> l3 = new ArrayList<Vertex>();
       l3.add(vert);
       l3.add(containingTriangle.get(1));
       l3.add(containingTriangle.get(2));
-      triangulation.add(l2);
+      addToTriangulation(triangulation, l3);
       // Now we need to improve the local result
       // We use the legalizeEdge method to do this
       // For every pair of points there are at most two triangles containg that pair
@@ -91,63 +100,99 @@ public class DelanayTriangulation implements GraphAlgorithm {
     }
 
     // Now we remove the fake points i.e. triangle[1], triangle[2]
-    triangulation.removeTrianglesWithVertex(bigTriangle.get(1));
-    triangulation.removeTrianglesWithVertex(bigTriangle.get(2));
+    removeTrianglesWithVertex(triangulation, fakeVertex1);
+    removeTrianglesWithVertex(triangulation, fakeVertex2);
 
     addTriangulationEdges(gmi, triangulation);
   }
 
+  private void removeTrianglesWithVertex(
+      final List<List<Vertex>> triangulation, final Vertex vertex) {
+    final List<Vertex> removals = new ArrayList<Vertex>();
+    for (final List<Vertex> triangle : triangulation) {
+      if (triangle.contains(vertex)) {
+        removals.add(vertex);
+      }
+    }
+    triangulation.removeAll(removals);
+  }
+
   private void addTriangulationEdges(final GraphModelInterface gmi,
-      final List<Vertex[]> triangulation) {
+      final List<List<Vertex>> triangulation) {
     final Set<Edge> edgeSet = new TreeSet<Edge>();
-    for (final Vertex[] triangle : triangulation) {
-      edgeSet.add(new Edge(triangle[0], triangle[1]));
-      edgeSet.add(new Edge(triangle[1], triangle[2]));
-      edgeSet.add(new Edge(triangle[0], triangle[2]));
+    for (final List<Vertex> triangle : triangulation) {
+      edgeSet.add(new Edge(triangle.get(0), triangle.get(1)));
+      edgeSet.add(new Edge(triangle.get(1), triangle.get(2)));
+      edgeSet.add(new Edge(triangle.get(0), triangle.get(2)));
     }
     gmi.getEdges().addAll(edgeSet);
   }
 
+  private boolean deleteFromTriangulation(
+      final List<List<Vertex>> triangulation, final List<Vertex> triangle) {
+    Collections.sort(triangle);
+    return triangulation.remove(triangle);
+  }
+
   private void legalizeEdge(final Vertex v, final Vertex p1, final Vertex p2,
       final List<List<Vertex>> triangulation) {
-      
-      for (List<Vertex> triangle : triangulation) {
-          
-          Vertex p3 = null;
-          int i1 = triangle.indexOf(p1);
-          int i2 = triangle.indexOf(p2);
-          if (i1 != -1 && i2 != -1) {
-              if (i1 + i2 == 1) {
-                  p3 = triangle.get(2);
-              } else if (i1 + i2 == 3) {
-                  p3 = triangle.get(0);
-              } else if (i1 + i2 == 2){
-                  p3 = triangle.get(1);
-              } else {
-                  System.out.println("oh shit");
-              }
-              
-              // TODO: Check if there are points inside the triangle.
-              int comp = Double.compare(p1.distanceTo(p2), v.distanceTo(p3));
-              if (comp > 0) {
-                  
-              }
+
+    for (int triangleIndex = 0; triangleIndex < triangulation.size(); triangleIndex++) {
+      // final List<Vertex> triangle : triangulation) {
+      final List<Vertex> triangle = triangulation.get(triangleIndex);
+      Vertex p3 = null;
+      final int i1 = triangle.indexOf(p1);
+      final int i2 = triangle.indexOf(p2);
+      if (i1 != -1 && i2 != -1) {
+        // Reid's method
+        p3 = triangle.get(3 - (i1 + i2));
+        // TODO: Check if there are points inside the triangle.
+        final int comp = Double.compare(distance(p1, p2), distance(v, p3));
+        if (comp > 0) {
+          // list destroy v, p1, p2
+          if (deleteFromTriangulation(triangulation,
+              Arrays.asList(new Vertex[] { v, p1, p2 }))) {
+            triangleIndex--;
           }
+
+          // list destroy p1, p2, p3
+          if (deleteFromTriangulation(triangulation,
+              Arrays.asList(new Vertex[] { p1, p2, p3 }))) {
+            triangleIndex--;
+          }
+
+          // list add v, p1, p3
+          addToTriangulation(triangulation,
+              Arrays.asList(new Vertex[] { v, p1, p3 }));
+          // list add v, p2,p3
+          addToTriangulation(triangulation,
+              Arrays.asList(new Vertex[] { v, p2, p3 }));
+        }
+
+        legalizeEdge(v, p1, p3, triangulation);
+        legalizeEdge(v, p3, p2, triangulation);
       }
+    }
 
   }
-  
+
+  private double distance(final Vertex v1, final Vertex v2) {
+    return Math
+        .pow(
+            Math.pow(v1.getX() - v2.getX(), 2)
+            + Math.pow(v1.getY() - v2.getY(), 2), .5);
+  }
 
   // http://stackoverflow.com/questions/2049582/how-to-determine-a-point-in-a-triangle
   private boolean isInTriangle(final Vertex vertex, final List<Vertex> tri) {
     boolean b1, b2, b3;
 
-    b1 = sign(vertex.getX(), vertex.getY(), tri.get(0).getX(), tri.get(0).getY(),
-        tri.get(1).getX(), tri.get(1).getY()) < 0.0;
-    b2 = sign(vertex.getX(), vertex.getY(), tri.get(1).getX(), tri.get(1).getY(),
-        tri.get(2).getX(), tri.get(2).getY()) < 0.0;
-    b3 = sign(vertex.getX(), vertex.getY(), tri.get(2).getX(), tri.get(2).getY(),
-        tri.get(0).getX(), tri.get(0).getY()) < 0.0;
+    b1 = sign(vertex.getX(), vertex.getY(), tri.get(0).getX(), tri.get(0)
+        .getY(), tri.get(1).getX(), tri.get(1).getY()) < 0.0;
+    b2 = sign(vertex.getX(), vertex.getY(), tri.get(1).getX(), tri.get(1)
+        .getY(), tri.get(2).getX(), tri.get(2).getY()) < 0.0;
+    b3 = sign(vertex.getX(), vertex.getY(), tri.get(2).getX(), tri.get(2)
+        .getY(), tri.get(0).getX(), tri.get(0).getY()) < 0.0;
 
     return ((b1 == b2) && (b2 == b3));
   }
@@ -177,7 +222,8 @@ public class DelanayTriangulation implements GraphAlgorithm {
     return true;
   }
 
-  private List<Vertex> buildBigTriangle(final Vertex startVert, final List<Vertex> vertices) {
+  private List<Vertex> buildBigTriangle(final Vertex startVert,
+      final List<Vertex> vertices) {
     // assumes vertices are sorted
     final double maxY = startVert.getY();
     final double minY = getMinY(vertices) - 1;
