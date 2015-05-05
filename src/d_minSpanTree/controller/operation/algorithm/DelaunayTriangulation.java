@@ -99,13 +99,13 @@ public class DelaunayTriangulation implements GraphAlgorithm {
       // other triangle containing the two adjacent edges
 
       // TODO: Add if statement to handle the case when vert lies
-      // on one of the edges of the triangle.
-//      legalizeEdge(vert, containingTriangle.get(0), containingTriangle.get(1),
-//          triangulation);
-//      legalizeEdge(vert, containingTriangle.get(0), containingTriangle.get(2),
-//          triangulation);
-//      legalizeEdge(vert, containingTriangle.get(1), containingTriangle.get(2),
-//          triangulation);
+       //on one of the edges of the triangle.
+      legalizeEdge(vert, containingTriangle.get(0), containingTriangle.get(1),
+          triangulation);
+      legalizeEdge(vert, containingTriangle.get(0), containingTriangle.get(2),
+          triangulation);
+      legalizeEdge(vert, containingTriangle.get(1), containingTriangle.get(2),
+          triangulation);
     }
 
     // Now we remove the fake points i.e. triangle[1], triangle[2]
@@ -188,9 +188,67 @@ public class DelaunayTriangulation implements GraphAlgorithm {
     return triangulation.remove(triangle);
   }
 
+  //from http://stackoverflow.com/questions/4103405/what-is-the-algorithm-for-finding-the-center-of-a-circle-from-three-points
+  public Vertex getCircleCenter(Vertex A, Vertex B, Vertex C) {
+
+      double yDelta_a = B.getY() - A.getY();
+      double xDelta_a = B.getX() - A.getX();
+      double yDelta_b = C.getY() - B.getY();
+      double xDelta_b = C.getX() - B.getX();
+      Vertex center = new Vertex("center",0,0);
+
+      double aSlope = yDelta_a/xDelta_a;
+      double bSlope = yDelta_b/xDelta_b;
+
+      Vertex AB_Mid = new Vertex("ab_mid",(A.getX()+B.getX())/2, (A.getY()+B.getY())/2);
+      Vertex BC_Mid = new Vertex("bc_mid",(B.getX()+C.getX())/2, (B.getY()+C.getY())/2);
+
+      if(yDelta_a == 0)         //aSlope == 0
+      {
+          center.setX(AB_Mid.getX());
+          if (xDelta_b == 0)         //bSlope == INFINITY
+          {
+              center.setY(BC_Mid.getY());
+          }
+          else
+          {
+              center.setY(BC_Mid.getY() + (BC_Mid.getX()-center.getX())/bSlope);
+          }
+      }
+      else if (yDelta_b == 0)               //bSlope == 0
+      {
+          center.setX( BC_Mid.getX());
+          if (xDelta_a == 0)             //aSlope == INFINITY
+          {
+              center.setY(AB_Mid.getY());
+          }
+          else
+          {
+              center.setY( AB_Mid.getY() + (AB_Mid.getX()-center.getX())/aSlope);
+          }
+      }
+      else if (xDelta_a == 0)        //aSlope == INFINITY
+      {
+          center.setY( AB_Mid.getY());
+          center.setX( bSlope*(BC_Mid.getY()-center.getY()) + BC_Mid.getX());
+      }
+      else if (xDelta_b == 0)        //bSlope == INFINITY
+      {
+          center.setY( BC_Mid.getY());
+          center.setX( aSlope*(AB_Mid.getY()-center.getY()) + AB_Mid.getX());
+      }
+      else
+      {
+          center.setX( (aSlope*bSlope*(AB_Mid.getY()-BC_Mid.getY()) - aSlope*BC_Mid.getX() + bSlope*AB_Mid.getX())/(bSlope-aSlope));
+          center.setY( AB_Mid.getY() - (center.getX() - AB_Mid.getX())/aSlope);
+      }
+
+      return center;
+  }
+  
   private void legalizeEdge(final Vertex v, final Vertex p1, final Vertex p2,
       final List<List<Vertex>> triangulation) {
-
+      
     for (int triangleIndex = 0; triangleIndex < triangulation.size(); triangleIndex++) {
       // final List<Vertex> triangle : triangulation) {
       final List<Vertex> triangle = triangulation.get(triangleIndex);
@@ -200,35 +258,76 @@ public class DelaunayTriangulation implements GraphAlgorithm {
       if (i1 != -1 && i2 != -1) {
         // Reid's method
         p3 = triangle.get(3 - (i1 + i2));
-        // TODO: Check if there are points inside the triangle.
-        final int comp = Double.compare(distance(p1, p2), distance(v, p3));
-        if (comp > 0) {
-          // list destroy v, p1, p2
+        if (p3.compareTo(v) == 0) {
+            continue;
+        }
+        //p3 is not equal to v
+        //check if p3 is in the circle made by the points v,p1,p2
+        Vertex center = getCircleCenter(v,p1,p2);
+        double radius = distance(center,p1);
+        if (distance(center,p3) < radius) {
+          
+         // list destroy p1, p2, v
           if (deleteFromTriangulation(triangulation,
               Arrays.asList(new Vertex[] { v, p1, p2 }))) {
             triangleIndex--;
           }
-
+    
           // list destroy p1, p2, p3
           if (deleteFromTriangulation(triangulation,
               Arrays.asList(new Vertex[] { p1, p2, p3 }))) {
             triangleIndex--;
           }
-
+    
           // list add v, p1, p3
           addToTriangulation(triangulation,
               Arrays.asList(new Vertex[] { v, p1, p3 }));
           // list add v, p2,p3
           addToTriangulation(triangulation,
               Arrays.asList(new Vertex[] { v, p2, p3 }));
+          
+          legalizeEdge(v, p1, p3, triangulation);
+          legalizeEdge(v, p3, p2, triangulation);
         }
 
-        legalizeEdge(v, p1, p3, triangulation);
-        legalizeEdge(v, p3, p2, triangulation);
+        }
       }
     }
-
-  }
+        
+        
+        
+        // TODO: Check if there are points inside the triangle.
+//        final int comp = Double.compare(distance(p1, p2), distance(v, p3));
+//        if (comp > 0) {
+//          // list destroy v, p1, p2
+//          if (deleteFromTriangulation(triangulation,
+//              Arrays.asList(new Vertex[] { v, p1, p2 }))) {
+//            triangleIndex--;
+//          }
+//
+//          // list destroy p1, p2, p3
+//          if (deleteFromTriangulation(triangulation,
+//              Arrays.asList(new Vertex[] { p1, p2, p3 }))) {
+//            triangleIndex--;
+//          }
+//
+//          // list add v, p1, p3
+//          addToTriangulation(triangulation,
+//              Arrays.asList(new Vertex[] { v, p1, p3 }));
+//          // list add v, p2,p3
+//          addToTriangulation(triangulation,
+//              Arrays.asList(new Vertex[] { v, p2, p3 }));
+//          
+//          // Now some recursion.
+//          legalizeEdge(v, p1, p3, triangulation);
+//          legalizeEdge(v, p3, p2, triangulation);
+//        }
+//
+//        
+//      }
+//    }
+//
+//  }
 
   private double distance(final Vertex v1, final Vertex v2) {
     return Math
