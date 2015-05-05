@@ -118,7 +118,9 @@ public class DelaunayTriangulation implements GraphAlgorithm {
 
   private void removeTrianglesWithVertex(
       final List<List<Vertex>> triangulation, final Vertex vertex) {
+      
     final List<Vertex> removals = new ArrayList<Vertex>();
+    
     for (final List<Vertex> triangle : triangulation) {
       if (triangle.contains(vertex)) {
         removals.add(vertex);
