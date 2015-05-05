@@ -44,7 +44,7 @@ public class DelanayTriangulationTest {
     lists.add(tri1);
     lists.add(tri2);
 
-    assertEquals(0, d.getContainingTriangleIndex(v2, lists));
+    //assertEquals(0, d.getContainingTriangleIndex(v2, lists));
 
     final Vertex startVertex = new Vertex("v", 1, 1);
     final Vertex zerozero = new Vertex("v", 0, 0);
