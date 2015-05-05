@@ -8,15 +8,16 @@ public class Vertex implements Comparable<Vertex> {
   private String displayName;
   private final ArrayList<Vertex> adj = new ArrayList<Vertex>();
 
+  @Override
+  public String toString() {
+    return getX() + " " + getY();
+  }
+
   public Vertex(final String name, final double x, final double y) {
     this.name = name;
     displayName = name;
     position[0] = x;
     position[1] = y;
-  }
-  
-  public double distanceTo(Vertex other) {
-      return Math.sqrt(Math.pow(getX() - other.getX(),2) + Math.pow(getY() - other.getY(), 2));
   }
 
   public String getName() {
@@ -53,11 +54,15 @@ public class Vertex implements Comparable<Vertex> {
 
   @Override
   public int compareTo(final Vertex other) {
+
+    final int comp = Double.compare(getX(), getY());
+
     int comp = Double.compare(getY(), other.getY());
+
     if (comp != 0) {
-      return -comp;
+      return Double.compare(getY(), other.getY());
     } else {
-      return -Double.compare(getX(), other.getX());
+      return comp;
     }
   }
 
