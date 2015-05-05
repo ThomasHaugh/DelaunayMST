@@ -53,7 +53,7 @@ public class Vertex implements Comparable<Vertex> {
 
   @Override
   public int compareTo(final Vertex other) {
-    final int comp = Double.compare(getY(), other.getY());
+    int comp = Double.compare(getY(), other.getY());
     if (comp != 0) {
       return -comp;
     } else {
