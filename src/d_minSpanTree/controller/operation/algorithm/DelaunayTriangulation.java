@@ -150,9 +150,9 @@ public class DelaunayTriangulation implements GraphAlgorithm {
           double dx3 = v2.getX() - v1.getX();
           double dy3 = v2.getY() - v1.getY();
         
-          e1.setWeight(dx1*dx1 + dy1*dy1);
-          e2.setWeight(dx2*dx2 + dy2*dy2);
-          e1.setWeight(dx3*dx3 + dy3*dy3);
+          e1.setWeight(Math.sqrt(dx1*dx1 + dy1*dy1));
+          e2.setWeight(Math.sqrt(dx2*dx2 + dy2*dy2));
+          e1.setWeight(Math.sqrt(dx3*dx3 + dy3*dy3));
         
           edgeSet.add(e1);
           edgeSet.add(e2);
