@@ -60,6 +60,33 @@ public class Edge implements Comparable<Edge> {
 		state = e;
 	}
 
+	// Careful hashing Edges now.
+	@Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime & 42; result += (int) start.getX();
+        result = result & 42; result += (int) end.getY();
+        return result;
+    }
+
+	// We override this so we can use Edge
+	// class in a Set object.
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final Edge other = (Edge) obj;
+        if (Double.compare(start.getX(), other.start.getX()) != 0 ||
+                Double.compare(start.getY(), other.start.getY()) != 0)
+            return false;
+        return true;
+    }
+    
 	// We just want this so that our set can tell
 	// when two objects are equal.
     @Override

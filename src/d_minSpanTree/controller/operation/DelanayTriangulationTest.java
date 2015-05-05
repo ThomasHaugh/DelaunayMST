@@ -8,20 +8,20 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import d_minSpanTree.controller.operation.algorithm.DelanayTriangulation;
+import d_minSpanTree.controller.operation.algorithm.DelaunayTriangulation;
 import d_minSpanTree.model.Vertex;
 
 public class DelanayTriangulationTest {
-  DelanayTriangulation d;
+  DelaunayTriangulation d;
 
   @Before
   public void setUp() throws Exception {
-    final DelanayTriangulation d = new DelanayTriangulation();
+    final DelaunayTriangulation d = new DelaunayTriangulation();
   }
 
   @Test
   public void test() {
-    final DelanayTriangulation d = new DelanayTriangulation();
+    final DelaunayTriangulation d = new DelaunayTriangulation();
     final Vertex v1 = new Vertex("v", 1, 1);
     final Vertex v2 = new Vertex("v", 2, 2);
     final Vertex v3 = new Vertex("v", 1, 2);

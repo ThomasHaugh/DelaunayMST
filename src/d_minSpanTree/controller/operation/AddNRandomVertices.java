@@ -3,7 +3,7 @@ package d_minSpanTree.controller.operation;
 import java.util.Random;
 import java.util.Stack;
 
-import d_minSpanTree.controller.operation.algorithm.DelanayTriangulation;
+import d_minSpanTree.controller.operation.algorithm.DelaunayTriangulation;
 import d_minSpanTree.model.GraphModelInterface;
 import d_minSpanTree.model.Vertex;
 
@@ -29,16 +29,12 @@ public class AddNRandomVertices implements GraphOperation {
       gmi.getEdges().clear();
     }
 
-    // TODO: (group assignment) modify below to get the code run faster
-    final long startTime = System.nanoTime(); // Start the total timing
-
-    final int ii = 0;
     for (int i = 0; i < nRandomVertices; i++) {
-      final double xPos = rand.nextDouble() * 800; // todo: relate these to actual window space
+      double xPos = rand.nextDouble() * 800; // todo: relate these to actual window space
       // dimensions
-      final double yPos = rand.nextDouble() * 670; // or, in the very least to
+      double yPos = rand.nextDouble() * 670; // or, in the very least to
       // GraphViewer.windowWidth and Height
-      final Vertex v = new Vertex("p" + gmi.getVertices().size(), xPos, yPos);
+      Vertex v = new Vertex("p" + gmi.getVertices().size(), xPos, yPos);
 
 //       Edge creation O(n^2).
 //       for (final Vertex vB : gmi.getVertices()) {
@@ -57,15 +53,7 @@ public class AddNRandomVertices implements GraphOperation {
       gmi.getVertices().add(v);
     }
     // Make and add our edges.
-    final DelanayTriangulation dt = new DelanayTriangulation();
-    dt.execute(gmi);
     
-    final long endTime = System.nanoTime(); // Finish the total timing
-    final float timeElapsed = (endTime - startTime) / 1000000.0f; // milliseconds
-    System.out.println("Edge creation O(f(nE,nV)???):" + timeElapsed);
-
-    System.out.println("ii");
-    System.out.println(ii);
     gmi.runAlgorithms();
   }
 

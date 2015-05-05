@@ -11,7 +11,7 @@ import d_minSpanTree.model.Edge;
 import d_minSpanTree.model.GraphModelInterface;
 import d_minSpanTree.model.Vertex;
 
-public class DelanayTriangulation implements GraphAlgorithm {
+public class DelaunayTriangulation implements GraphAlgorithm {
 
   public boolean addToTriangulation(final List<List<Vertex>> triangulation,
       final List<Vertex> triangle) {
@@ -23,6 +23,8 @@ public class DelanayTriangulation implements GraphAlgorithm {
   public void execute(final GraphModelInterface gmi) {
     gmi.getEdges().clear();
 
+    long startTime = System.nanoTime(); // Start the total timing
+    
     // First we just need the points to be triangualted
     final List<Vertex> vertices = new ArrayList<Vertex>();
     vertices.addAll(gmi.getVertices());
@@ -103,7 +105,12 @@ public class DelanayTriangulation implements GraphAlgorithm {
     removeTrianglesWithVertex(triangulation, fakeVertex1);
     removeTrianglesWithVertex(triangulation, fakeVertex2);
 
+    // Add all of our edges to the gmi.
     addTriangulationEdges(gmi, triangulation);
+    
+    long endTime   = System.nanoTime(); // Finish the total timing
+    float timeElapsed = (endTime-startTime)/1000000.0f; // milliseconds
+    System.out.println("Edge creation O(f(nE,nV)???):" + timeElapsed);
   }
 
   private void removeTrianglesWithVertex(
@@ -119,13 +126,36 @@ public class DelanayTriangulation implements GraphAlgorithm {
 
   private void addTriangulationEdges(final GraphModelInterface gmi,
       final List<List<Vertex>> triangulation) {
-    final Set<Edge> edgeSet = new TreeSet<Edge>();
-    for (final List<Vertex> triangle : triangulation) {
-      edgeSet.add(new Edge(triangle.get(0), triangle.get(1)));
-      edgeSet.add(new Edge(triangle.get(1), triangle.get(2)));
-      edgeSet.add(new Edge(triangle.get(0), triangle.get(2)));
-    }
-    gmi.getEdges().addAll(edgeSet);
+      
+      // Use a set to avoid adding duplicate edges.
+      final Set<Edge> edgeSet = new TreeSet<Edge>();
+      for (final List<Vertex> triangle : triangulation) {
+          
+          Vertex v0 = triangle.get(0);
+          Vertex v1 = triangle.get(1);
+          Vertex v2 = triangle.get(2);
+          Edge e1 = new Edge(v0, v1);
+          Edge e2 = new Edge(v0, v2);
+          Edge e3 = new Edge(v1, v2);
+        
+          double dx1 = v1.getX() - v0.getX();
+          double dy1 = v1.getY() - v0.getY();
+          double dx2 = v2.getX() - v0.getX();
+          double dy2 = v2.getY() - v0.getY();
+          double dx3 = v2.getX() - v1.getX();
+          double dy3 = v2.getY() - v1.getY();
+        
+          e1.setWeight(dx1*dx1 + dy1*dy1);
+          e2.setWeight(dx2*dx2 + dy2*dy2);
+          e1.setWeight(dx3*dx3 + dy3*dy3);
+        
+          edgeSet.add(e1);
+          edgeSet.add(e2);
+          edgeSet.add(e3);
+      }
+      
+      gmi.getEdges().addAll(edgeSet);
+      edgeSet.clear();
   }
 
   private boolean deleteFromTriangulation(
