@@ -3,7 +3,10 @@ package d_minSpanTree.controller.operation.algorithm;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
+import d_minSpanTree.model.Edge;
 import d_minSpanTree.model.GraphModelInterface;
 import d_minSpanTree.model.Vertex;
 
@@ -27,7 +30,8 @@ public class DelanayTriangulation implements GraphAlgorithm {
     // We make a surrounding triangle so that the algorithm is as simple
     // as possible, buildBigTriangle does this by making two fake vertices
     // which will be removed from the final triangulation
-    final Vertex[] bigTriangle = buildBigTriangle(startVert, vertices); // triangle should be a three
+    final Vertex[] bigTriangle = buildBigTriangle(startVert, vertices); // triangle should be a
+    // three
     // elem array
     // Positions 1 & 2 of triangle are added points
 
@@ -78,12 +82,22 @@ public class DelanayTriangulation implements GraphAlgorithm {
     triangulation.removeTrianglesWithVertex(bigTriangle[1]);
     triangulation.removeTrianglesWithVertex(bigTriangle[2]);
 
-    gmi.addTriangulationEdges(triangulation);
+    addTriangulationEdges(gmi, triangulation);
+  }
+
+  private void addTriangulationEdges(final GraphModelInterface gmi,
+      final List<Vertex[]> triangulation) {
+    final Set<Edge> edgeSet = new TreeSet<Edge>();
+    for (final Vertex[] triangle : triangulation) {
+      edgeSet.add(new Edge(triangle[0], triangle[1]));
+      edgeSet.add(new Edge(triangle[1], triangle[2]));
+      edgeSet.add(new Edge(triangle[0], triangle[2]));
+    }
+    gmi.getEdges().addAll(edgeSet);
   }
 
   private void legalizeEdge(final Vertex v, final Vertex p1, final Vertex p2,
       final List<Vertex[]> triangulation) {
-      
 
   }
 
@@ -126,68 +140,65 @@ public class DelanayTriangulation implements GraphAlgorithm {
     return true;
   }
 
-  Vertex[] buildBigTriangle(final Vertex startVert, 
-          final List<Vertex> vertices) {
-      // assumes vertices are sorted
-      double maxY = startVert.getY();
-      double minY = getMinY(vertices) - 1;
-      double startVertX = startVert.getX();
-      double startVertY = startVert.getY();
-      
-      double maxSlope = Double.MIN_VALUE;
-      for (Vertex v : vertices) {
-          if (startVert.getX() < v.getX()) {
-              double vSlope = (v.getY() - startVertY) / 
-                      (v.getX() - startVertX);
-              if (vSlope > maxSlope) {
-                  maxSlope = vSlope;
-              }
-          }
-      }
-      
-      double p1X;
-      double p1Y;
-      if (maxSlope == Double.MIN_VALUE) {
-          p1X = startVert.getX();
-          p1Y = minY;
-      } else {
-          // Multiply maxSlope by 1/2 in order to keep vertices
-          // off of our edges.
-          p1X = ((minY - startVertY) / (0.5*maxSlope)) + startVertX;
-          p1Y = minY;
-      }
-      
-      double minSlope = Double.MAX_VALUE;
-      for (Vertex v : vertices) {
-          double vSlope = (v.getY() - startVertY) / 
-                      (v.getX() - startVertX);
-          if (vSlope < minSlope) {
-              minSlope = vSlope;
-          }
-      }
-      
-      double p2X = (((maxY+1) - p1Y) / (0.5*minSlope)) + p1X;
-      double p2Y = maxY + 1;
+  Vertex[] buildBigTriangle(final Vertex startVert, final List<Vertex> vertices) {
+    // assumes vertices are sorted
+    final double maxY = startVert.getY();
+    final double minY = getMinY(vertices) - 1;
+    final double startVertX = startVert.getX();
+    final double startVertY = startVert.getY();
 
-//    final double biggestX = maxs[0];
-//    final double biggestY = maxs[1];
-//    final double p1X = (biggestY / biggestX) * (biggestY + 1) + biggestX + 1;
-//    final double p1Y = startVert.getY();
-//    final double p2X = startVert.getX();
-//    final double p2Y = (biggestX / biggestY) * (biggestX + 1) + biggestY + 1;
+    double maxSlope = Double.MIN_VALUE;
+    for (final Vertex v : vertices) {
+      if (startVert.getX() < v.getX()) {
+        final double vSlope = (v.getY() - startVertY) / (v.getX() - startVertX);
+        if (vSlope > maxSlope) {
+          maxSlope = vSlope;
+        }
+      }
+    }
 
-      final Vertex[] bigTriangle = new Vertex[3];
-      bigTriangle[0] = startVert;
-      bigTriangle[1] = new Vertex("fake point 1", p1X, p1Y);
-      bigTriangle[2] = new Vertex("fake point2", p2X, p2Y);
-      return bigTriangle;
+    double p1X;
+    double p1Y;
+    if (maxSlope == Double.MIN_VALUE) {
+      p1X = startVert.getX();
+      p1Y = minY;
+    } else {
+      // Multiply maxSlope by 1/2 in order to keep vertices
+      // off of our edges.
+      p1X = ((minY - startVertY) / (0.5 * maxSlope)) + startVertX;
+      p1Y = minY;
+    }
+
+    double minSlope = Double.MAX_VALUE;
+    for (final Vertex v : vertices) {
+      final double vSlope = (v.getY() - startVertY) / (v.getX() - startVertX);
+      if (vSlope < minSlope) {
+        minSlope = vSlope;
+      }
+    }
+
+    final double p2X = (((maxY + 1) - p1Y) / (0.5 * minSlope)) + p1X;
+    final double p2Y = maxY + 1;
+
+    // final double biggestX = maxs[0];
+    // final double biggestY = maxs[1];
+    // final double p1X = (biggestY / biggestX) * (biggestY + 1) + biggestX + 1;
+    // final double p1Y = startVert.getY();
+    // final double p2X = startVert.getX();
+    // final double p2Y = (biggestX / biggestY) * (biggestX + 1) + biggestY + 1;
+
+    final Vertex[] bigTriangle = new Vertex[3];
+    bigTriangle[0] = startVert;
+    bigTriangle[1] = new Vertex("fake point 1", p1X, p1Y);
+    bigTriangle[2] = new Vertex("fake point2", p2X, p2Y);
+    return bigTriangle;
   }
 
   private Double getMinY(final List<Vertex> vertices) {
     double smallestY = Double.MAX_VALUE;
     for (final Vertex v : vertices) {
-        if (v.getY() < smallestY) {
-            smallestY = v.getY();
+      if (v.getY() < smallestY) {
+        smallestY = v.getY();
       }
     }
     return smallestY;

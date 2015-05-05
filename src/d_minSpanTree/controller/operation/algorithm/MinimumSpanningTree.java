@@ -7,66 +7,76 @@ import d_minSpanTree.model.GraphModelInterface;
 import d_minSpanTree.model.Vertex;
 
 public class MinimumSpanningTree implements GraphAlgorithm {
-	private ArrayList<ArrayList<Vertex>> forest;
+  private ArrayList<ArrayList<Vertex>> forest;
 
-	public void execute(GraphModelInterface gmi) {
-		forest = new ArrayList<ArrayList<Vertex>>();
-		for (Edge e : gmi.getEdges()) {
-			e.setOpacity(.05);
-		}
-		ArrayList<Edge> finalTree = new ArrayList<Edge>();
+  @Override
+  public void execute(final GraphModelInterface gmi) {
+    forest = new ArrayList<ArrayList<Vertex>>();
+    for (final Edge e : gmi.getEdges()) {
+      e.setOpacity(.05);
+    }
+    final ArrayList<Edge> finalTree = new ArrayList<Edge>();
 
-		ArrayList<Object> edges = new ArrayList<Object>();
-		edges.addAll(gmi.getEdges());
+    final ArrayList<Object> edges = new ArrayList<Object>();
+    edges.addAll(gmi.getEdges());
 
-		for (Vertex v : gmi.getVertices()) {
-			ArrayList<Vertex> tree = new ArrayList<Vertex>();
-			tree.add(v);
-			forest.add(tree);
-		}
+    for (final Vertex v : gmi.getVertices()) {
+      final ArrayList<Vertex> tree = new ArrayList<Vertex>();
+      tree.add(v);
+      forest.add(tree);
+    }
 
-        // Kruskal's algorithm O(f(nE,nV)???) in an efficient time complexity implementation.
-        long startTime = System.nanoTime(); // Start the total timing
-        // Quicksort of the entire edge array puts us at O(???) time complexity
-		(new QuickSort(edges, new AscEdgeWeight())).sort();
-		for (int i = 0; i < edges.size(); i++) {
-			Edge e = (Edge) edges.get(i);
-			ArrayList<Vertex> tree1 = findTree(e.getStart());
-			ArrayList<Vertex> tree2 = findTree(e.getEnd());
-			if (tree1 != tree2) {
-				finalTree.add(e);
-				tree1.addAll(tree2);
-				forest.remove(tree2);
-			}
-		}
-        long endTime  = System.nanoTime(); // Finish the total timing
-        float timeElapsed = (endTime-startTime)/1000000.0f; // milliseconds
-        System.out.println("MST (Kruskal) time O(f(nE,nV)???):" + timeElapsed);
+    // Kruskal's algorithm O(f(nE,nV)???) in an efficient time complexity implementation.
+    final long startTime = System.nanoTime(); // Start the total timing
+    // Quicksort of the entire edge array puts us at O(???) time complexity
+    (new QuickSort(edges, new AscEdgeWeight())).sort();
+    System.out.println("edges");
+    System.out.println(edges.size());
+    for (int i = 0; i < edges.size(); i++) {
+      final Edge e = (Edge) edges.get(i);
+      final ArrayList<Vertex> tree1 = findTree(e.getStart());
+      final ArrayList<Vertex> tree2 = findTree(e.getEnd());
+      if (tree1 != tree2) {
+        finalTree.add(e);
+        tree1.addAll(tree2);
+        forest.remove(tree2);
+      }
+    }
+    final long endTime = System.nanoTime(); // Finish the total timing
+    final float timeElapsed = (endTime - startTime) / 1000000.0f; // milliseconds
+    System.out.println("MST (Kruskal) time O(f(nE,nV)???):" + timeElapsed);
 
-		for (Edge e : finalTree) {
-			e.setOpacity(1);
-		}
-		
-		gmi.getDisplayEdges().clear();
-        gmi.getDisplayEdges().addAll(finalTree); // Only adding the MST edges for display
-        //gmi.getDisplayEdges().addAll(gmi.getEdges()); // Adding all edges for display (Use this only if Delaunay)
-	}
+    for (final Edge e : finalTree) {
+      e.setOpacity(1);
+    }
 
-	private ArrayList<Vertex> findTree(Vertex vert) {
-		for (ArrayList<Vertex> tree : forest) {
-			for (Vertex v : tree)
-				if (vert == v)
-					return tree;
-		}
-		return null;
-	}
+    gmi.getDisplayEdges().clear();
+    gmi.getDisplayEdges().addAll(finalTree); // Only adding the MST edges for display
+    // gmi.getDisplayEdges().addAll(gmi.getEdges()); // Adding all edges for display (Use this only
+    // if Delaunay)
+  }
 
-	public String getName() {
-		return "Minimum Spanning Tree";
-	}
+  private ArrayList<Vertex> findTree(final Vertex vert) {
+    // System.out.println("forest");
+    // System.out.println(forest.size());
+    for (final ArrayList<Vertex> tree : forest) {
+      // System.out.println("tree");
+      // System.out.println(tree.size());
+      for (final Vertex v : tree)
+        if (vert == v)
+          return tree;
+    }
+    return null;
+  }
 
-	public boolean canLiveUpdate() {
-		return true;
-	}
+  @Override
+  public String getName() {
+    return "Minimum Spanning Tree";
+  }
+
+  @Override
+  public boolean canLiveUpdate() {
+    return true;
+  }
 
 }
