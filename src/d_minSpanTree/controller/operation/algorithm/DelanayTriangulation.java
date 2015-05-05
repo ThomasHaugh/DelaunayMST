@@ -1,6 +1,7 @@
 package d_minSpanTree.controller.operation.algorithm;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -84,8 +85,33 @@ public class DelanayTriangulation implements GraphAlgorithm {
   private void legalizeEdge(final Vertex v, final Vertex p1, final Vertex p2,
       final List<Vertex[]> triangulation) {
       
+      for (int i=0; i < triangulation.size(); i++) {
+          Vertex[] triangle = triangulation.get(i);
+          triangulation.indexOf(triangle);
+          boolean p1InTriangle = false;
+          boolean p2InTriangle = false;
+          Vertex p3 = null;
+          for (int j=0; i < 3; i++) {
+              if (triangle[j] == p1) {
+                  p1InTriangle = true;
+              } else if (triangle[j] == p2) {
+                  p2InTriangle = true;
+              } else {
+                  // our 3rd coordinate
+                  p3 = triangle[j];
+              }
+          }
+          if (p1InTriangle && p2InTriangle) {
+              // TODO: Check if there are points inside the triangle.
+              int comp = Double.compare(p1.distanceTo(p2), v.distanceTo(p3));
+              if (comp > 0) {
+                  
+              }
+          }
+      }
 
   }
+  
 
   // http://stackoverflow.com/questions/2049582/how-to-determine-a-point-in-a-triangle
   private boolean isInTriangle(final Vertex vertex, final Vertex[] tri) {

@@ -14,6 +14,10 @@ public class Vertex implements Comparable<Vertex> {
     position[0] = x;
     position[1] = y;
   }
+  
+  public double distanceTo(Vertex other) {
+      return Math.sqrt(Math.pow(getX() - other.getX(),2) + Math.pow(getY() - other.getY(), 2));
+  }
 
   public String getName() {
     return name;
