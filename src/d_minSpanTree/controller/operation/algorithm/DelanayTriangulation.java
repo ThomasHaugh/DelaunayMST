@@ -38,6 +38,7 @@ public class DelanayTriangulation implements GraphAlgorithm {
     // as possible, buildBigTriangle does this by making two fake vertices
     // which will be removed from the final triangulation
     final List<Vertex> bigTriangle = buildBigTriangle(startVert, vertices); // triangle should be a
+    System.out.println("DKLFJSLD: " + bigTriangle.get(0).getX() + " " + bigTriangle.get(0).getY());
     final Vertex fakeVertex1 = bigTriangle.get(1);
     final Vertex fakeVertex2 = bigTriangle.get(2);
     // three
@@ -47,13 +48,10 @@ public class DelanayTriangulation implements GraphAlgorithm {
     // We also make a triangulation data structure
     // We can probably do better than an arraylist
     final List<List<Vertex>> triangulation = new ArrayList<List<Vertex>>();
-    Collections.sort(bigTriangle);
     addToTriangulation(triangulation, bigTriangle);
 
     // We permute the remaining elements to prevent edgecase behavior
-    Collections.shuffle(vertices); // I don't know if this method exist, but it's a good place
-    // holder
-
+    Collections.shuffle(vertices);
     // Now the main for loop over the remaining elements
     for (final Vertex vert : vertices) {
       // Right now I am leaving out an if statment that should be there to make the
@@ -61,6 +59,7 @@ public class DelanayTriangulation implements GraphAlgorithm {
 
       // We find which member of the triangulation for now this might just
       // be a linear scan and we return its index in the triangulation data structure
+      System.out.println("size: " + triangulation.size());
       final int ctIndex = getContainingTriangleIndex(vert, triangulation);
       final List<Vertex> containingTriangle = triangulation.get(ctIndex);
       // we remove the triangle we will refine and then add in the three new triangles
@@ -206,6 +205,7 @@ public class DelanayTriangulation implements GraphAlgorithm {
       final List<List<Vertex>> triangulation) {
     for (int i = 0; i < triangulation.size(); i++) {
       if (isInTriangle(vertex, triangulation.get(i))) {
+          System.out.println("TRUE");
         return i;
       }
     }
@@ -225,7 +225,7 @@ public class DelanayTriangulation implements GraphAlgorithm {
   private List<Vertex> buildBigTriangle(final Vertex startVert,
       final List<Vertex> vertices) {
     // assumes vertices are sorted
-    final double maxY = startVert.getY();
+    final double maxY = startVert.getY() + 1;
     final double minY = getMinY(vertices) - 1;
     final double startVertX = startVert.getX();
     final double startVertY = startVert.getY();
@@ -233,7 +233,7 @@ public class DelanayTriangulation implements GraphAlgorithm {
     double maxSlope = Double.MIN_VALUE;
     for (final Vertex v : vertices) {
       if (startVert.getX() < v.getX()) {
-        final double vSlope = (v.getY() - startVertY) / (v.getX() - startVertX);
+        double vSlope = (v.getY() - startVertY) / (v.getX() - startVertX);
         if (vSlope > maxSlope) {
           maxSlope = vSlope;
         }
@@ -252,16 +252,16 @@ public class DelanayTriangulation implements GraphAlgorithm {
       p1Y = minY;
     }
 
-    double minSlope = Double.MAX_VALUE;
+    maxSlope = Double.MIN_VALUE;
     for (final Vertex v : vertices) {
-      final double vSlope = (v.getY() - startVertY) / (v.getX() - startVertX);
-      if (vSlope < minSlope) {
-        minSlope = vSlope;
+      double vSlope = (v.getY() - startVertY) / (v.getX() - startVertX);
+      if (vSlope > maxSlope) {
+        maxSlope = vSlope;
       }
     }
 
-    final double p2X = (((maxY + 1) - p1Y) / (0.5 * minSlope)) + p1X;
-    final double p2Y = maxY + 1;
+    final double p2X = ((maxY - p1Y) / (0.5 * maxSlope)) + p1X;
+    final double p2Y = maxY;
 
     // final double biggestX = maxs[0];
     // final double biggestY = maxs[1];
