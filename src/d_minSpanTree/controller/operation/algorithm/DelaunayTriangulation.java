@@ -25,11 +25,14 @@ public class DelaunayTriangulation implements GraphAlgorithm {
 
     long startTime = System.nanoTime(); // Start the total timing
     
-    // First we just need the points to be triangualted
+    // First we just need the points to be triangulated
     final List<Vertex> vertices = new ArrayList<Vertex>();
     vertices.addAll(gmi.getVertices());
     Collections.sort(vertices); // This gives us a lexicographic sort on the members
-
+    
+    if (vertices.isEmpty()) {
+        return; // Go no farther if there are no vertices to work with.
+    }
     // We pick the starting element as the first member of the sorted list
     // this point will let us build a triangle around the remaining points
     // due to its position
