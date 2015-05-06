@@ -52,6 +52,13 @@ public class Vertex implements Comparable<Vertex> {
     return adj;
   }
 
+    public double distanceTo(final Vertex other) {
+	    return Math
+		.pow(
+		     Math.pow(this.getX() - other.getX(), 2)
+		     + Math.pow(this.getY() - other.getY(), 2), .5);
+    }     
+    
   @Override
   public int compareTo(final Vertex other) {
 

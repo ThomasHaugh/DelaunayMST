@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 /bin/
+=======
+*.class
+>>>>>>> branch 'master' of https://github.com/ThomasHaugh/DelaunayMST.git
