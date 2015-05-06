@@ -26,6 +26,6 @@ public class UltimateGraph extends Application {
 		//controller.getInvoker().doOperation(new AddGraphAlgorithm(new ConnectAllVertices()));
 		//controller.getInvoker().doOperation(new AddGraphAlgorithm(new WeightByDistance()));
 		controller.getInvoker().doOperation(new AddGraphAlgorithm(new DelaunayTriangulation()));
-		//controller.getInvoker().doOperation(new AddGraphAlgorithm(new MinimumSpanningTree()));
+		controller.getInvoker().doOperation(new AddGraphAlgorithm(new MinimumSpanningTree()));
 	}
 }

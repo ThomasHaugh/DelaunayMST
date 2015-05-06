@@ -89,6 +89,8 @@ public class Edge implements Comparable<Edge> {
     
 	// We just want this so that our set can tell
 	// when two objects are equal.
+    // This broke our MST function so note that we will just overwite
+    // the compareTo in the corresponding file
     @Override
     public int compareTo(Edge o) {
         if ((start.compareTo(o.start) == 0 && end.compareTo(o.end) == 0) ||

@@ -1,6 +1,8 @@
 package d_minSpanTree.controller.operation.algorithm;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import d_minSpanTree.model.Edge;
 import d_minSpanTree.model.GraphModelInterface;
@@ -17,8 +19,16 @@ public class MinimumSpanningTree implements GraphAlgorithm {
     }
     final ArrayList<Edge> finalTree = new ArrayList<Edge>();
 
-    final ArrayList<Object> edges = new ArrayList<Object>();
+    final ArrayList<Edge> edges = new ArrayList<Edge>();
     edges.addAll(gmi.getEdges());
+
+    //Set the edge weights since for some reason that is not done
+    for (final Edge e : edges) {
+	Vertex v1 = e.getStart();
+	Vertex v2 = e.getEnd();
+	double w  = v1.distanceTo(v2);
+	e.setWeight(w);
+    }
 
     for (final Vertex v : gmi.getVertices()) {
       final ArrayList<Vertex> tree = new ArrayList<Vertex>();
@@ -29,7 +39,16 @@ public class MinimumSpanningTree implements GraphAlgorithm {
     // Kruskal's algorithm O(f(nE,nV)???) in an efficient time complexity implementation.
     final long startTime = System.nanoTime(); // Start the total timing
     // Quicksort of the entire edge array puts us at O(???) time complexity
-    (new QuickSort(edges, new AscEdgeWeight())).sort();
+    //(new QuickSort(edges, new AscEdgeWeight())).sort();
+    //We broke this I think so I am just using java sort
+    Collections.sort(edges, new Comparator<Edge>() {
+	    public int compare(Edge e1, Edge e2) {
+		double w1 = e1.getWeight();
+		double w2 = e2.getWeight();
+		return Double.compare(w1,w2);
+	    }
+	}); 
+    
     System.out.println("edges");
     System.out.println(edges.size());
     for (int i = 0; i < edges.size(); i++) {
