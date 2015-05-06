@@ -116,11 +116,11 @@ public class DelaunayTriangulation implements GraphAlgorithm {
     System.out.println("Edge creation O(f(nE,nV)???):" + timeElapsed);
     
     // Just for testing.
-    for (final Edge e : gmi.getEdges()) {
-        e.setOpacity(1);
-      }
-    gmi.getDisplayEdges().clear();
-    gmi.getDisplayEdges().addAll(gmi.getEdges());
+//    for (final Edge e : gmi.getEdges()) {
+//        e.setOpacity(1);
+//      }
+//    gmi.getDisplayEdges().clear();
+//    gmi.getDisplayEdges().addAll(gmi.getEdges());
   }
 
   private void addTriangulationEdges(final GraphModelInterface gmi) {
