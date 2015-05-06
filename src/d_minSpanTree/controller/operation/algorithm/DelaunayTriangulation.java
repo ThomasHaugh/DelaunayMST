@@ -221,16 +221,9 @@ public class DelaunayTriangulation implements GraphAlgorithm {
   }
   
   private void legalizeEdge(final Vertex v, final Vertex p1, final Vertex p2) {
-      System.out.println("hi");
+
     for (int triangleIndex = 0; triangleIndex < triangulation.size(); triangleIndex++) {
-      // final List<Vertex> triangle : triangulation) {
-        System.out.println("tri index: " + triangleIndex);
-        List<Vertex> triangle = null;
-        try {
-            triangle = triangulation.get(triangleIndex);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("TRIANGLE INDEX: " + triangleIndex);
-        }
+        List<Vertex> triangle = triangulation.get(triangleIndex);
       
       Vertex p3 = null;
       final int i1 = triangle.indexOf(p1);
